@@ -2,6 +2,24 @@
 
 use Illuminate\Support\Str;
 
+$databaseUrl = env('DATABASE_URL');
+$dbConnection = env('DB_CONNECTION');
+
+// If DATABASE_URL is set (Render/Heroku style), prefer the URL scheme.
+// This prevents misconfiguration when DB_CONNECTION is left as "mysql".
+if ($databaseUrl) {
+    $scheme = parse_url($databaseUrl, PHP_URL_SCHEME);
+    if (in_array($scheme, ['postgres', 'postgresql'], true)) {
+        $dbConnection = 'pgsql';
+    } elseif ($scheme === 'mysql') {
+        $dbConnection = 'mysql';
+    } elseif ($scheme === 'sqlite') {
+        $dbConnection = 'sqlite';
+    } elseif (in_array($scheme, ['sqlsrv', 'mssql'], true)) {
+        $dbConnection = 'sqlsrv';
+    }
+}
+
 return [
 
     /*
@@ -17,7 +35,7 @@ return [
 
     // This project uses PostgreSQL as the default database.
     // Render commonly provides DATABASE_URL, but DB_CONNECTION may be unset.
-    'default' => env('DB_CONNECTION', 'pgsql'),
+    'default' => $dbConnection ?: 'pgsql',
 
     /*
     |--------------------------------------------------------------------------

@@ -3,6 +3,22 @@ set -euo pipefail
 
 cd /var/www/html
 
+# Prefer DATABASE_URL scheme (Render) over any leftover DB_CONNECTION value.
+# This avoids accidentally booting with MySQL config when using Render Postgres.
+if [ -n "${DATABASE_URL:-}" ]; then
+  case "${DATABASE_URL}" in
+    postgres://*|postgresql://*)
+      export DB_CONNECTION="pgsql"
+      ;;
+    mysql://*)
+      export DB_CONNECTION="mysql"
+      ;;
+    sqlite://*)
+      export DB_CONNECTION="sqlite"
+      ;;
+  esac
+fi
+
 # Render sets $PORT. Make Apache listen on it.
 if [ -n "${PORT:-}" ]; then
   sed -ri "s/^Listen 80$/Listen ${PORT}/" /etc/apache2/ports.conf
@@ -29,6 +45,9 @@ echo "DB_PORT=${DB_PORT:-<unset>}"
 echo "DB_DATABASE=${DB_DATABASE:-<unset>}"
 echo "DB_USERNAME=${DB_USERNAME:-<unset>}"
 echo "DATABASE_URL=${DATABASE_URL:+<set>}"
+
+php -r 'echo "PDO_DRIVERS=" . implode(",", PDO::getAvailableDrivers()) . PHP_EOL;' || true
+php -r 'foreach (["pdo","pdo_pgsql","pgsql","pdo_mysql","mysqlnd","pdo_sqlite","sqlite3"] as $e) { echo $e . "=" . (extension_loaded($e) ? "1" : "0") . PHP_EOL; }' || true
 
 if [ "${RUN_STORAGE_LINK:-1}" = "1" ]; then
   php artisan storage:link || true
