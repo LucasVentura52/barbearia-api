@@ -62,3 +62,34 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Deploy (Render)
+
+Recommended: deploy as a Docker web service.
+
+### Render Settings
+
+- Runtime: Docker
+- Build: uses `Dockerfile` in this repo
+- Start: handled by the image entrypoint
+
+### Required Env Vars (Render)
+
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_KEY=base64:...` (generate with `php artisan key:generate --show`)
+- `APP_URL=https://<your-service>.onrender.com`
+- `LOG_CHANNEL=stderr`
+
+Database (Render Postgres):
+- `DB_CONNECTION=pgsql`
+- `DB_HOST=<internal host>` (example: `dpg-...-a`)
+- `DB_PORT=5432`
+- `DB_DATABASE=...`
+- `DB_USERNAME=...`
+- `DB_PASSWORD=...`
+- `DB_SSLMODE=require`
+
+Optional:
+- `RUN_MIGRATIONS=1` (default) to auto-run `php artisan migrate --force` on deploy
+- `RUN_STORAGE_LINK=1` (default) to run `php artisan storage:link`
