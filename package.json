@@ -7,7 +7,8 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "db:proxy": "bash scripts/start-db-proxy.sh"
     },
     "devDependencies": {
         "axios": "^0.21",
