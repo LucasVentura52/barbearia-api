@@ -23,6 +23,13 @@ php artisan view:clear || true
 
 php artisan package:discover --ansi
 
+echo "DB_CONNECTION=${DB_CONNECTION:-<unset>}"
+echo "DB_HOST=${DB_HOST:-<unset>}"
+echo "DB_PORT=${DB_PORT:-<unset>}"
+echo "DB_DATABASE=${DB_DATABASE:-<unset>}"
+echo "DB_USERNAME=${DB_USERNAME:-<unset>}"
+echo "DATABASE_URL=${DATABASE_URL:+<set>}"
+
 if [ "${RUN_STORAGE_LINK:-1}" = "1" ]; then
   php artisan storage:link || true
 fi

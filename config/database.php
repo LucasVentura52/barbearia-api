@@ -15,7 +15,9 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    // This project uses PostgreSQL as the default database.
+    // Render commonly provides DATABASE_URL, but DB_CONNECTION may be unset.
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
