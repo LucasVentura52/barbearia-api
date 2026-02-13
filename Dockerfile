@@ -4,10 +4,10 @@ FROM composer:2.7 AS vendor
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --no-scripts
 
 COPY . .
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoload --no-dev --optimize --no-scripts
 
 
 FROM php:8.2-apache AS app
@@ -16,6 +16,8 @@ WORKDIR /var/www/html
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libpq-dev \
+    libcurl4-openssl-dev \
+    libonig-dev \
     libzip-dev \
     libpng-dev \
     libjpeg-dev \
@@ -24,7 +26,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-  && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql gd exif zip
+  && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql gd exif zip curl mbstring
 
 RUN a2enmod rewrite
 

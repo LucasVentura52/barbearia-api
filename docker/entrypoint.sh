@@ -21,6 +21,8 @@ fi
 php artisan config:clear || true
 php artisan view:clear || true
 
+php artisan package:discover --ansi
+
 if [ "${RUN_STORAGE_LINK:-1}" = "1" ]; then
   php artisan storage:link || true
 fi
